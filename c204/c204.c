@@ -47,7 +47,19 @@ int solved;
 ** nadeklarovat a používat pomocnou proměnnou typu char.
 */
 void untilLeftPar ( tStack* s, char* postExpr, unsigned* postLen ) {
+  	char stackTopVar;
+	while (!stackEmpty(s))
+	{
+		stackTop(s, &stackTopVar);
+		stackPop(s);
 
+		if (stackTopVar == '(') // kdyz narazime na levou zavorku, vyskocime z teto fuknce
+		{
+			break;
+		}
+
+		postExpr[(*postLen)++] = stackTopVar;
+	}
 }
 
 /*
@@ -61,7 +73,30 @@ void untilLeftPar ( tStack* s, char* postExpr, unsigned* postLen ) {
 ** představuje parametr postLen, výstupním polem znaků je opět postExpr.
 */
 void doOperation ( tStack* s, char c, char* postExpr, unsigned* postLen ) {
+	if (stackEmpty(s))
+	{
+		stackPush(s, c);
+		return;
+	}
+  
+  	char stackTopVar;  
+  	stackTop(s, &stackTopVar);
 
+  	if (stackTopVar == '(')
+	{
+		stackPush(s, c);
+		return;
+	}
+
+  	if ((c == '*' || c == '/') && (stackTopVar == '+' || stackTopVar == '-'))
+  	{
+    	stackPush(s, c);
+		return;
+  	}
+  
+  	postExpr[(*postLen)++] = stackTopVar;
+	stackPop(s);
+	doOperation(s, c, postExpr, postLen);
 }
 
 /* 
@@ -108,10 +143,57 @@ void doOperation ( tStack* s, char c, char* postExpr, unsigned* postLen ) {
 ** ověřte, že se alokace skutečně zdrařila. V případě chyby alokace vraťte namísto
 ** řetězce konstantu NULL.
 */
-char* infix2postfix (const char* infExpr) {
+char* infix2postfix (const char* infExpr) {	
+  	char *postExpr = malloc(MAX_LEN * sizeof(char));
+  	if (postExpr == NULL)
+  	{
+    	return NULL;
+  	}
 
-  solved = 0;                        /* V případě řešení smažte tento řádek! */
-  return NULL;                /* V případě řešení můžete smazat tento řádek. */
+  	tStack *stack = malloc(sizeof(tStack));
+  	if (stack == NULL)
+  	{
+    	free(postExpr);
+    	return NULL;
+  	}
+  
+  	stackInit(stack);
+  	unsigned int postLen = 0;
+
+  	for (int i = 0; infExpr[i] != 0; i++)
+  	{
+    	char c = infExpr[i];
+    	if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) // zpracovavany prvek je operand
+	  	{
+		  	postExpr[postLen++] = c;      
+	  	}
+    	else if (c == '(') // zpracovavany prvek je levá závorka
+	  	{
+		  	stackPush(stack, c);
+	  	}
+    	else if (c == '+' || c == '-' || c == '*' || c == '/') // zpracovavany prvek je operátor
+		{
+			doOperation(stack, c, postExpr, &postLen);
+		}
+    	else if (c == ')') // zpracovavany prvek je pravá závorka
+		{
+			untilLeftPar(stack, postExpr, &postLen);
+		}
+    	else if (c == '=') // zpracovavany prvek je omezovac =
+		{
+			while (!stackEmpty(stack))
+			{					
+				stackTop(stack, &(postExpr[postLen++]));
+				stackPop(stack);
+			}
+
+			postExpr[postLen++] = '=';
+			break;
+		}    
+  	}
+  	postExpr[postLen++] = 0;
+	free(stack);
+	return postExpr;
 }
 
 /* Konec c204.c */
