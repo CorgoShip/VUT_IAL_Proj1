@@ -94,7 +94,7 @@ void DLDisposeList (tDLList *L) {
         newElemPtr = L->First;
     }
 
-    DLInitList(L);
+    DLInitList(L);  // uvede veci do stavu po inicializaci
 }
 
 void DLInsertFirst (tDLList *L, int val) {
@@ -113,14 +113,11 @@ void DLInsertFirst (tDLList *L, int val) {
     }
     
     newElemPtr->data = val;
-    newElemPtr->rptr = L->First; // dedelat druhy ptr na NULL?
+    newElemPtr->rptr = L->First;
     newElemPtr->lptr = NULL;
-
-//tady dat podminku
 
     if (L->First != NULL)
     {
-        //newElemPtr->rptr = L->First;
         L->First->lptr = newElemPtr;
         L->First = newElemPtr;
     }
@@ -150,8 +147,7 @@ void DLInsertLast(tDLList *L, int val) {
     newElemPtr->rptr = NULL;
 
     if (L->Last != NULL)
-    {
-        //newElemPtr->lptr = L->Last;
+    {       
         L->Last->rptr = newElemPtr;
         L->Last = newElemPtr;
     }
@@ -169,7 +165,6 @@ void DLFirst (tDLList *L) {
 ** aniž byste testovali, zda je seznam L prázdný.
 **/
     L->Act = L->First;
-
 }
 
 void DLLast (tDLList *L) {
@@ -178,8 +173,7 @@ void DLLast (tDLList *L) {
 ** Funkci implementujte jako jediný příkaz (nepočítáme-li return),
 ** aniž byste testovali, zda je seznam L prázdný.
 **/
-    L->Act = L->Last;
-	
+    L->Act = L->Last;	
 }
 
 void DLCopyFirst (tDLList *L, int *val) {
@@ -193,8 +187,7 @@ void DLCopyFirst (tDLList *L, int *val) {
         return;
     }
 
-    *val = L->First->data;
-	
+    *val = L->First->data;	
 }
 
 void DLCopyLast (tDLList *L, int *val) {
@@ -208,8 +201,7 @@ void DLCopyLast (tDLList *L, int *val) {
         return;
     }
 
-    *val = L->Last->data;
-	
+    *val = L->Last->data;	
 }
 
 void DLDeleteFirst (tDLList *L) {
@@ -391,7 +383,6 @@ void DLCopy (tDLList *L, int *val) {
     }
 
     *val = L->Act->data;	
-	
 }
 
 void DLActualize (tDLList *L, int val) {
@@ -403,7 +394,6 @@ void DLActualize (tDLList *L, int val) {
     {
         L->Act->data = val;
     }
-	
 }
 
 void DLSucc (tDLList *L) {
@@ -418,7 +408,6 @@ void DLSucc (tDLList *L) {
     }
 }
 
-
 void DLPred (tDLList *L) {
 /*
 ** Posune aktivitu na předchozí prvek seznamu L.
@@ -429,7 +418,6 @@ void DLPred (tDLList *L) {
     {
         L->Act = L->Act->lptr;
     }
-	
 }
 
 int DLActive (tDLList *L) {
@@ -438,7 +426,6 @@ int DLActive (tDLList *L) {
 ** Funkci je vhodné implementovat jedním příkazem return.
 **/
 	return L->Act != NULL;
-	
 }
 
 /* Konec c206.c*/
